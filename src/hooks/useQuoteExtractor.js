@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { extractQuotesFromImage } from '../utils/claudeApi.js'
 
-export function useQuoteExtractor(apiKey) {
+export function useQuoteExtractor(apiKey, apiBaseUrl = '/anthropic-api') {
   const [images, setImages] = useState([])
   const [quotes, setQuotes] = useState([])
   const [processing, setProcessing] = useState(false)
@@ -41,7 +41,7 @@ export function useQuoteExtractor(apiKey) {
       try {
         const base64 = await fileToBase64(image.file)
         const mimeType = image.file.type || 'image/jpeg'
-        const result = await extractQuotesFromImage(base64, mimeType, apiKey)
+        const result = await extractQuotesFromImage(base64, mimeType, apiKey, apiBaseUrl)
 
         // Add quotes with unique IDs
         const newQuotes = (result.quotes || []).map(q => ({

@@ -4,11 +4,14 @@ import ImageUpload from './components/ImageUpload.jsx'
 import ProcessingQueue from './components/ProcessingQueue.jsx'
 import QuoteList from './components/QuoteList.jsx'
 import CopyButton from './components/CopyButton.jsx'
+import ProxySettings from './components/ProxySettings.jsx'
 import { useApiKey } from './hooks/useApiKey.js'
 import { useQuoteExtractor } from './hooks/useQuoteExtractor.js'
+import { useProxySettings } from './hooks/useProxySettings.js'
 
 export default function App() {
   const { apiKey, saveApiKey, clearApiKey } = useApiKey()
+  const { settings: proxySettings, saveSettings: saveProxySettings, getApiBaseUrl } = useProxySettings()
   const {
     images,
     quotes,
@@ -20,12 +23,22 @@ export default function App() {
     deleteQuote,
     toggleQuoteSelected,
     clearAll,
-  } = useQuoteExtractor(apiKey)
+  } = useQuoteExtractor(apiKey, getApiBaseUrl())
 
-  const [view, setView] = useState('upload') // 'upload' | 'processing' | 'results'
+  const [view, setView] = useState('upload') // 'upload' | 'processing' | 'results' | 'proxySettings'
 
   if (!apiKey) {
     return <ApiKeySetup onSave={saveApiKey} />
+  }
+
+  if (view === 'proxySettings') {
+    return (
+      <ProxySettings
+        settings={proxySettings}
+        onSave={saveProxySettings}
+        onBack={() => setView('upload')}
+      />
+    )
   }
 
   const handleImagesSelected = (newImages) => {
@@ -53,12 +66,20 @@ export default function App() {
             <span className="text-xl">✦</span>
             <h1 className="text-lg font-semibold text-gray-800">金句提取器</h1>
           </div>
-          <button
-            onClick={() => clearApiKey()}
-            className="text-xs text-gray-400 px-2 py-1 rounded hover:bg-gray-100"
-          >
-            设置
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setView('proxySettings')}
+              className="text-xs text-gray-400 px-2 py-1 rounded hover:bg-gray-100"
+            >
+              网络
+            </button>
+            <button
+              onClick={() => clearApiKey()}
+              className="text-xs text-gray-400 px-2 py-1 rounded hover:bg-gray-100"
+            >
+              设置
+            </button>
+          </div>
         </header>
 
         {/* Main content */}

@@ -1,5 +1,5 @@
-export async function extractQuotesFromImage(imageBase64, mimeType, apiKey) {
-  const response = await fetch('/anthropic-api/v1/messages', {
+export async function extractQuotesFromImage(imageBase64, mimeType, apiKey, apiBaseUrl = '/anthropic-api') {
+  const response = await fetch(`${apiBaseUrl}/v1/messages`, {
     method: 'POST',
     headers: {
       'x-api-key': apiKey,
